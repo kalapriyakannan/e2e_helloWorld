@@ -5,6 +5,7 @@ pipeline {
         IMAGE_NAME = "claud-code-webapp"
         CONTAINER_NAME = "claud-code-webapp"
         PORT = "5000"
+        PODMAN = "/opt/podman/bin/podman"
     }
 
     stages {
@@ -20,7 +21,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 sh """
-                    podman build -t ${IMAGE_NAME}:latest .
+                    ${PODMAN}build -t ${IMAGE_NAME}:latest .
                 """
             }
         }
@@ -29,8 +30,8 @@ pipeline {
             steps {
                 echo 'Stopping existing container if running...'
                 sh """
-                    podman stop ${CONTAINER_NAME} || true
-                    podman rm ${CONTAINER_NAME} || true
+                    ${PODMAN}stop ${CONTAINER_NAME} || true
+                    ${PODMAN}rm ${CONTAINER_NAME} || true
                 """
             }
         }
@@ -39,7 +40,7 @@ pipeline {
             steps {
                 echo 'Deploying new container...'
                 sh """
-                    podman run -d \
+                    ${PODMAN}run -d \
                         --name ${CONTAINER_NAME} \
                         -p ${PORT}:5000 \
                         --restart unless-stopped \
@@ -65,7 +66,7 @@ pipeline {
         }
         failure {
             echo 'Deployment failed. Check the logs above.'
-            sh "podman logs ${CONTAINER_NAME} || true"
+            sh "${PODMAN}logs ${CONTAINER_NAME} || true"
         }
     }
 }
