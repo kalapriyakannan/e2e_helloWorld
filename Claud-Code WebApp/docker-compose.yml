@@ -1,0 +1,7 @@
+services:
+  webapp:
+    build: .
+    container_name: claud-code-webapp
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
